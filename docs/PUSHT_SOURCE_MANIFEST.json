@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "audited_at_utc": "2026-10-31T16:38:55.945420+00:00",
+  "status": "source_audited_candidate_runtime_resolved_only",
+  "author_original_environment_recovered": false,
+  "gpu_allocated": false,
+  "training_executed": false,
+  "large_asset_bytes_downloaded": false,
+  "official_lewm": {
+    "repository": "https://github.com/lucas-maes/le-wm",
+    "revision": "8edfeb336732b5f3ce7b8b210d0ba370a09e2cac"
+  },
+  "dependency_candidates": [
+    {
+      "name": "stable-worldmodel",
+      "source": "https://github.com/galilai-group/stable-worldmodel",
+      "revision": "abdced49809d5eae38e24b27dc7b635c502c4812",
+      "commit_date": "2026-05-20T14:18:30-04:00",
+      "declared_version": "0.0.6",
+      "selection_basis": "latest commit before the pinned LeWM commit, not evidence of author usage",
+      "files": {
+        "stable_worldmodel/data/utils.py": {
+          "sha256_lf": "a132734367c219c0fdf59cd9d3631ed83bfe58bc427aa41e85146e26ac79ab4c"
+        },
+        "stable_worldmodel/data/formats/hdf5.py": {
+          "sha256_lf": "afe836ec706acc6c55450f3c936a5898b57ed65a999695af25b4b59cd14d10f3"
+        },
+        "stable_worldmodel/data/formats/lance.py": {
+          "sha256_lf": "5643a80df28fc8b658b7323bbfcc7684c4ce4280f1ecd24a160ef823c280d331"
+        },
+        "stable_worldmodel/wm/utils.py": {
+          "sha256_lf": "48b8ea9fad66887d4f4fecc18d7e47b3d6fa9e7c3791c9769137ef20ab128424"
+        },
+        "stable_worldmodel/world/world.py": {
+          "sha256_lf": "f0d2834a04c7ce8915522773f6f4f53396cdf79bf3a1c92c3560d8d2c378fe56"
+        },
+        "stable_worldmodel/solver/cem.py": {
+          "sha256_lf": "a6662e7f1f2c6ecaf0a8527255d531aa05ed583339aabdf2798d0206382ef51b"
+        },
+        "stable_worldmodel/policy.py": {
+          "sha256_lf": "4967e7e3d5b20eb7a1d0b00e5d60fd701cce1c750ae7ec4a9b02529b9366db22"
+        }
+      }
+    },
+    {
+      "name": "stable-pretraining",
+      "source": "https://github.com/galilai-group/stable-pretraining",
+      "revision": "bce7c8b35a62399d0529068ed7fea5dd2ce9021e",
+      "tag": "v0.1.7",
+      "package_version": "0.1.7",
+      "wheel": "stable_pretraining-0.1.7-py3-none-any.whl",
+      "wheel_sha256": "60fc8fc3c9490e9a059aa7e038ab62cbe0505841e78c4165c18a99d8f599ec65",
+      "wheel_bytes": 832402,
+      "wheel_downloaded_and_hashed": true,
+      "audited_files_match_tag_after_lf_normalization": true,
+      "files": {
+        "stable_pretraining/module.py": {
+          "sha256_lf": "0373c5ed24e8a8d6b19c9b368c42c3cf17b572380680f09afc318b81739707ab"
+        },
+        "stable_pretraining/manager.py": {
+          "sha256_lf": "3e9df4a3abf6c958992fa4791097bab1fd36954066ea7661416cedc6de239101"
+        },
+        "stable_pretraining/optim/lr_scheduler.py": {
+          "sha256_lf": "e0be3763e196f34702714066a05fca739d11bf3f1d1938761356aa98676c15ea"
+        },
+        "stable_pretraining/backbone/utils.py": {
+          "sha256_lf": "b5c22e2a9679c9a68e5c4c2fb72aead993647dc0a72bd7d64625a0250dbaa3e7"
+        }
+      }
+    }
+  ],
+  "rejected_artifact": {
+    "name": "stable-worldmodel",
+    "version": "0.0.6",
+    "wheel": "stable_worldmodel-0.0.6-py3-none-any.whl",
+    "wheel_sha256": "90601307b3430436d617a5134579089414a1f98eab1dfb6aeabf36ea7f46ff4d",
+    "wheel_bytes": 208095,
+    "wheel_downloaded_and_hashed": true,
+    "reason": "2026-03-16 PyPI wheel lacks Lance load_dataset APIs; same version string as May Git source does not identify same code"
+  },
+  "runtime_lock": {
+    "input": "requirements/repro-pusht.in",
+    "input_sha256": "99e94708d27f19b442c9cae53b402c05c5a19fd443f156214d34a62377976b5a",
+    "path": "requirements/repro-pusht.txt",
+    "sha256": "0647f45618c33e28c053cbb9ee576baaf230e18554f7db03bd1b75c9749828a3",
+    "resolver": "uv 0.9.27",
+    "python": "3.10",
+    "platform": "x86_64-manylinux_2_28",
+    "package_count": 137,
+    "resolution_success": true,
+    "resolution_elapsed_seconds": 37.16,
+    "runtime_installed_on_target": false,
+    "wheel_bytes_fully_locked": false,
+    "isolated_build_dependencies_locked": false,
+    "warnings": [
+      "minari metadata requests typer[all]; selected typer 0.27.3 does not declare the all extra"
+    ],
+    "direct_version_metadata_checked": [
+      {
+        "name": "datasets",
+        "version": "3.6.0",
+        "requires_python": ">=3.9.0",
+        "error": null
+      },
+      {
+        "name": "einops",
+        "version": "0.8.1",
+        "requires_python": ">=3.8",
+        "error": null
+      },
+      {
+        "name": "gymnasium",
+        "version": "1.2.3",
+        "requires_python": ">=3.10",
+        "error": null
+      },
+      {
+        "name": "h5py",
+        "version": "3.14.0",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "hdf5plugin",
+        "version": "5.1.0",
+        "requires_python": ">=3.8",
+        "error": null
+      },
+      {
+        "name": "huggingface-hub",
+        "version": "0.34.4",
+        "requires_python": ">=3.8.0",
+        "error": null
+      },
+      {
+        "name": "hydra-core",
+        "version": "1.3.2",
+        "requires_python": "",
+        "error": null
+      },
+      {
+        "name": "hydra-submitit-launcher",
+        "version": "1.2.0",
+        "requires_python": "",
+        "error": null
+      },
+      {
+        "name": "imageio",
+        "version": "2.37.0",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "imageio-ffmpeg",
+        "version": "0.6.0",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "lancedb",
+        "version": "0.30.0",
+        "requires_python": ">=3.10",
+        "error": null
+      },
+      {
+        "name": "lightning",
+        "version": "2.6.1",
+        "requires_python": ">=3.10",
+        "error": null
+      },
+      {
+        "name": "minari",
+        "version": "0.5.3",
+        "requires_python": ">=3.8",
+        "error": null
+      },
+      {
+        "name": "numpy",
+        "version": "2.2.6",
+        "requires_python": ">=3.10",
+        "error": null
+      },
+      {
+        "name": "omegaconf",
+        "version": "2.3.0",
+        "requires_python": ">=3.6",
+        "error": null
+      },
+      {
+        "name": "opencv-python-headless",
+        "version": "4.12.0.88",
+        "requires_python": ">=3.6",
+        "error": null
+      },
+      {
+        "name": "pandas",
+        "version": "2.3.3",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "pillow",
+        "version": "11.3.0",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "pyarrow",
+        "version": "20.0.0",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "pygame",
+        "version": "2.6.1",
+        "requires_python": ">=3.6",
+        "error": null
+      },
+      {
+        "name": "pylance",
+        "version": "4.0.0",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "pymunk",
+        "version": "6.11.1",
+        "requires_python": ">=3.8",
+        "error": null
+      },
+      {
+        "name": "pytorch-lightning",
+        "version": "2.6.1",
+        "requires_python": ">=3.10",
+        "error": null
+      },
+      {
+        "name": "scikit-learn",
+        "version": "1.7.2",
+        "requires_python": ">=3.10",
+        "error": null
+      },
+      {
+        "name": "scipy",
+        "version": "1.15.3",
+        "requires_python": ">=3.10",
+        "error": null
+      },
+      {
+        "name": "shapely",
+        "version": "2.1.2",
+        "requires_python": ">=3.10",
+        "error": null
+      },
+      {
+        "name": "timm",
+        "version": "1.0.15",
+        "requires_python": ">=3.8",
+        "error": null
+      },
+      {
+        "name": "torch",
+        "version": "2.8.0",
+        "requires_python": ">=3.9.0",
+        "error": null
+      },
+      {
+        "name": "torchmetrics",
+        "version": "1.8.2",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "torchvision",
+        "version": "0.23.0",
+        "requires_python": ">=3.9",
+        "error": null
+      },
+      {
+        "name": "transformers",
+        "version": "4.51.3",
+        "requires_python": ">=3.9.0",
+        "error": null
+      },
+      {
+        "name": "wandb",
+        "version": "0.19.11",
+        "requires_python": ">=3.8",
+        "error": null
+      },
+      {
+        "name": "zstandard",
+        "version": "0.23.0",
+        "requires_python": ">=3.8",
+        "error": null
+      }
+    ]
+  },
+  "official_model": {
+    "repo_id": "quentinll/lewm-pusht",
+    "revision": "22b330c28c27ead4bfd1888615af1340e3fe9052",
+    "revision_api": "https://huggingface.co/api/models/quentinll/lewm-pusht?blobs=true",
+    "immutable_tree_url": "https://huggingface.co/quentinll/lewm-pusht/tree/22b330c28c27ead4bfd1888615af1340e3fe9052",
+    "files": [
+      {
+        "rfilename": ".gitattributes",
+        "blobId": "a6344aac8c09253b3b630fb776ae94478aa0275b",
+        "size": 1519
+      },
+      {
+        "rfilename": "README.md",
+        "blobId": "ff45e6fb2af057489eacebcb263f372061bdcab2",
+        "size": 178
+      },
+      {
+        "rfilename": "config.json",
+        "blobId": "2e534ee5c6286721c0ef967e24bddbfde482abf9",
+        "size": 1313
+      },
+      {
+        "rfilename": "weights.pt",
+        "blobId": "3a7873ece010f9f3c240b2ff3a4695e979aead41",
+        "size": 72290721,
+        "lfs": {
+          "sha256": "48938400ae3464c9680731287f583a9cb516f55a8ec64ea13a91be47fb15b607",
+          "size": 72290721,
+          "pointerSize": 133
+        }
+      }
+    ],
+    "weights_bytes_verified_locally": false,
+    "config_file_downloaded": true,
+    "config_sha256": "2564086e961e7b5c7c04dffc451091115b389a590645ff19653c64fd0bc16e09",
+    "config": {
+      "_target_": "stable_worldmodel.wm.lewm.LeWM",
+      "encoder": {
+        "_target_": "stable_pretraining.backbone.utils.vit_hf",
+        "size": "tiny",
+        "patch_size": 14,
+        "image_size": 224,
+        "pretrained": false,
+        "use_mask_token": false
+      },
+      "predictor": {
+        "_target_": "stable_worldmodel.wm.lewm.module.Predictor",
+        "num_frames": 3,
+        "input_dim": 192,
+        "hidden_dim": 192,
+        "output_dim": 192,
+        "depth": 6,
+        "heads": 16,
+        "mlp_dim": 2048,
+        "dim_head": 64,
+        "dropout": 0.1,
+        "emb_dropout": 0.0
+      },
+      "action_encoder": {
+        "_target_": "stable_worldmodel.wm.lewm.module.Embedder",
+        "input_dim": 10,
+        "emb_dim": 192
+      },
+      "projector": {
+        "_target_": "stable_worldmodel.wm.lewm.module.MLP",
+        "input_dim": 192,
+        "output_dim": 192,
+        "hidden_dim": 2048,
+        "norm_fn": {
+          "_target_": "torch.nn.BatchNorm1d",
+          "_partial_": true
+        }
+      },
+      "pred_proj": {
+        "_target_": "stable_worldmodel.wm.lewm.module.MLP",
+        "input_dim": 192,
+        "output_dim": 192,
+        "hidden_dim": 2048,
+        "norm_fn": {
+          "_target_": "torch.nn.BatchNorm1d",
+          "_partial_": true
+        }
+      }
+    }
+  },
+  "official_dataset": {
+    "repo_id": "quentinll/lewm-pusht",
+    "revision": "655cd446b9929369d7d406001da85c15d1457850",
+    "revision_api": "https://huggingface.co/api/datasets/quentinll/lewm-pusht?blobs=true",
+    "immutable_tree_url": "https://huggingface.co/datasets/quentinll/lewm-pusht/tree/655cd446b9929369d7d406001da85c15d1457850",
+    "files": [
+      {
+        "rfilename": ".gitattributes",
+        "blobId": "bed0738c7eeb449bca98b5d2f33c89a1ee56349a",
+        "size": 2504
+      },
+      {
+        "rfilename": "README.md",
+        "blobId": "afa431023f1f27fd7378e79a1f740f0f889814be",
+        "size": 136
+      },
+      {
+        "rfilename": "pusht_expert_train.h5.zst",
+        "blobId": "0f7c50ecb25af70ac9633acdae9288a201dead28",
+        "size": 13136247974,
+        "lfs": {
+          "sha256": "7cfbd6d90fa2f27876379a5ff169715a36ed82edbda64f9e5b5bfa34d212f318",
+          "size": 13136247974,
+          "pointerSize": 136
+        }
+      }
+    ],
+    "archive_bytes_verified_locally": false,
+    "compression": "zstandard single hdf5 file, not tar",
+    "train_backend_in_lewm": "pusht_expert_train.lance",
+    "eval_backend_in_lewm": "HDF5Dataset(pusht_expert_train)",
+    "conversion_executed": false,
+    "official_conversion_api": "stable_worldmodel.data.convert",
+    "conversion_defaults": {
+      "jpeg_quality": 95,
+      "numeric_dtype": "float32",
+      "mode": "append"
+    },
+    "required_conversion_override": {
+      "mode": "error",
+      "jpeg_quality": 95
+    },
+    "pixel_identity_guaranteed": false
+  },
+  "scheduler_source_contract": {
+    "manual_optimization": true,
+    "actual_step_frequency": "after each optimizer step; interval=epoch is not honored in Module.training_step",
+    "total_steps": "trainer.estimated_stepping_batches",
+    "warmup_steps": "max(1,int(0.01*total_steps))",
+    "warmup_start_lr": 0.0,
+    "eta_min": 0.0,
+    "changing_max_epochs_changes_schedule": true
+  },
+  "resume_source_contract": {
+    "manager_user_checkpoint_requires_absolute_existing_path": true,
+    "manager_default_weights_only": true,
+    "explicit_full_checkpoint_load_argument": {
+      "weights_only": false
+    },
+    "note": "weights_only controls deserialization policy; recovery of optimizer/scheduler/RNG must be established from checkpoint content and an interrupted/continuous comparison",
+    "model_state_dict_export_is_full_resume_checkpoint": false
+  },
+  "unresolved": [
+    "author environment and actual paper training schedule",
+    "clean Linux CPython3.10 installation/import and driver compatibility",
+    "official weights bytes and strict load",
+    "real HDF5 schema and complete HDF5 to Lance conversion audit",
+    "original 50-startpoint CEM evaluation",
+    "multiworker/CUDA/SIGReg RNG exact resume"
+  ]
+}

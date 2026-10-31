@@ -1,0 +1,505 @@
+# Candidate runtime version lock; NOT the authors' recovered environment.
+# Resolved only, not installed/tested on Linux: CPython 3.10, x86_64-manylinux_2_28.
+# Resolver: uv 0.9.27; source input: requirements/repro-pusht.in.
+# Includes CUDA 12.8 runtime packages through the Linux torch 2.8.0 wheel.
+# See docs/PUSHT_DEPENDENCY_AUDIT.md before installation or execution.
+aiohappyeyeballs==2.7.1
+    # via aiohttp
+aiohttp==3.14.5
+    # via fsspec
+aiosignal==1.4.0
+    # via aiohttp
+annotated-doc==0.0.5
+    # via typer
+annotated-types==0.8.0
+    # via pydantic
+antlr4-python3-runtime==4.9.3
+    # via
+    #   hydra-core
+    #   omegaconf
+async-timeout==5.0.1
+    # via aiohttp
+attrs==26.1.0
+    # via
+    #   aiohttp
+    #   cattrs
+    #   requests-cache
+cattrs==26.2.1
+    # via requests-cache
+certifi==2026.10.23
+    # via
+    #   requests
+    #   sentry-sdk
+cffi==2.1.1
+    # via pymunk
+charset-normalizer==3.5.2
+    # via requests
+click==8.5.0
+    # via wandb
+cloudpickle==3.1.2
+    # via
+    #   gymnasium
+    #   joblib
+    #   submitit
+contourpy==1.3.2
+    # via matplotlib
+cycler==0.12.1
+    # via matplotlib
+datasets==3.6.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+deprecation==2.1.0
+    # via lancedb
+dill==0.3.8
+    # via
+    #   datasets
+    #   multiprocess
+docker-pycreds==0.4.0
+    # via wandb
+einops==0.8.1
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-worldmodel
+exceptiongroup==1.3.1
+    # via cattrs
+farama-notifications==0.0.6
+    # via gymnasium
+filelock==4.1.0
+    # via
+    #   datasets
+    #   huggingface-hub
+    #   torch
+    #   transformers
+fonttools==4.65.0
+    # via matplotlib
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
+fsspec[http]==2025.3.0
+    # via
+    #   datasets
+    #   huggingface-hub
+    #   lightning
+    #   pytorch-lightning
+    #   torch
+gitdb==4.0.12
+    # via gitpython
+gitpython==3.2.1
+    # via wandb
+gymnasium==1.2.3
+    # via
+    #   -r requirements/repro-pusht.in
+    #   minari
+    #   stable-worldmodel
+h5py==3.14.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   hdf5plugin
+    #   minari
+hdf5plugin==5.1.0
+    # via -r requirements/repro-pusht.in
+hf-xet==1.8.0
+    # via huggingface-hub
+huggingface-hub==0.34.4
+    # via
+    #   -r requirements/repro-pusht.in
+    #   datasets
+    #   timm
+    #   tokenizers
+    #   transformers
+hydra-core==1.3.2
+    # via
+    #   -r requirements/repro-pusht.in
+    #   hydra-submitit-launcher
+    #   stable-pretraining
+hydra-submitit-launcher==1.2.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+idna==3.20
+    # via
+    #   requests
+    #   url-normalize
+    #   yarl
+imageio==2.37.0
+    # via -r requirements/repro-pusht.in
+imageio-ffmpeg==0.6.0
+    # via -r requirements/repro-pusht.in
+jinja2==3.1.6
+    # via torch
+joblib==1.6.0
+    # via scikit-learn
+kiwisolver==1.5.1
+    # via matplotlib
+lance-namespace==0.13.0
+    # via
+    #   lancedb
+    #   pylance
+lance-namespace-urllib3-client==0.13.0
+    # via lance-namespace
+lancedb==0.30.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-worldmodel
+lightning==2.6.1
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+lightning-utilities==0.15.3
+    # via
+    #   lightning
+    #   pytorch-lightning
+    #   torchmetrics
+loguru==0.7.3
+    # via
+    #   richuru
+    #   stable-pretraining
+    #   stable-worldmodel
+markdown-it-py==4.2.0
+    # via rich
+markupsafe==3.0.4
+    # via jinja2
+matplotlib==3.10.9
+    # via stable-pretraining
+mdurl==0.1.2
+    # via markdown-it-py
+minari[hdf5]==0.5.3
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+mpmath==1.3.0
+    # via sympy
+multidict==7.1.0
+    # via
+    #   aiohttp
+    #   yarl
+multiprocess==0.70.16
+    # via datasets
+networkx==3.4.2
+    # via torch
+numpy==2.2.6
+    # via
+    #   -r requirements/repro-pusht.in
+    #   contourpy
+    #   datasets
+    #   gymnasium
+    #   h5py
+    #   imageio
+    #   lancedb
+    #   matplotlib
+    #   minari
+    #   opencv-python-headless
+    #   pandas
+    #   pylance
+    #   scikit-learn
+    #   scipy
+    #   shapely
+    #   stable-worldmodel
+    #   torchmetrics
+    #   torchvision
+    #   transformers
+nvidia-cublas-cu12==12.8.4.1
+    # via
+    #   nvidia-cudnn-cu12
+    #   nvidia-cusolver-cu12
+    #   torch
+nvidia-cuda-cupti-cu12==12.8.90
+    # via torch
+nvidia-cuda-nvrtc-cu12==12.8.93
+    # via torch
+nvidia-cuda-runtime-cu12==12.8.90
+    # via torch
+nvidia-cudnn-cu12==9.10.2.21
+    # via torch
+nvidia-cufft-cu12==11.3.3.83
+    # via torch
+nvidia-cufile-cu12==1.13.1.3
+    # via torch
+nvidia-curand-cu12==10.3.9.90
+    # via torch
+nvidia-cusolver-cu12==11.7.3.90
+    # via torch
+nvidia-cusparse-cu12==12.5.8.93
+    # via
+    #   nvidia-cusolver-cu12
+    #   torch
+nvidia-cusparselt-cu12==0.7.1
+    # via torch
+nvidia-nccl-cu12==2.27.3
+    # via torch
+nvidia-nvjitlink-cu12==12.8.93
+    # via
+    #   nvidia-cufft-cu12
+    #   nvidia-cusolver-cu12
+    #   nvidia-cusparse-cu12
+    #   torch
+nvidia-nvtx-cu12==12.8.90
+    # via torch
+omegaconf==2.3.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   hydra-core
+    #   stable-pretraining
+opencv-python-headless==4.12.0.88
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+opt-einsum==3.4.0
+    # via stable-pretraining
+overrides==7.7.0
+    # via lancedb
+packaging==26.3
+    # via
+    #   datasets
+    #   deprecation
+    #   huggingface-hub
+    #   hydra-core
+    #   lancedb
+    #   lightning
+    #   lightning-utilities
+    #   matplotlib
+    #   minari
+    #   pytorch-lightning
+    #   torchmetrics
+    #   transformers
+pandas==2.3.3
+    # via
+    #   -r requirements/repro-pusht.in
+    #   datasets
+    #   stable-pretraining
+pillow==11.3.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   imageio
+    #   matplotlib
+    #   stable-pretraining
+    #   stable-worldmodel
+    #   torchvision
+platformdirs==4.12.4
+    # via
+    #   requests-cache
+    #   wandb
+prettytable==3.18.0
+    # via stable-pretraining
+propcache==0.5.4
+    # via
+    #   aiohttp
+    #   yarl
+protobuf==6.33.6
+    # via wandb
+psutil==7.2.2
+    # via wandb
+pyarrow==20.0.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   datasets
+    #   lancedb
+    #   pylance
+    #   stable-pretraining
+    #   stable-worldmodel
+pycparser==3.11
+    # via cffi
+pydantic==2.14.2
+    # via
+    #   lance-namespace-urllib3-client
+    #   lancedb
+    #   wandb
+pydantic-core==2.50.2
+    # via pydantic
+pygame==2.6.1
+    # via -r requirements/repro-pusht.in
+pygments==2.21.0
+    # via rich
+pylance==4.0.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+    #   stable-worldmodel
+pymunk==6.11.1
+    # via -r requirements/repro-pusht.in
+pyparsing==3.3.3
+    # via matplotlib
+python-dateutil==3.0.0
+    # via
+    #   lance-namespace-urllib3-client
+    #   matplotlib
+    #   pandas
+pytorch-lightning==2.6.1
+    # via
+    #   -r requirements/repro-pusht.in
+    #   lightning
+pytz==2026.6
+    # via pandas
+pyyaml==6.0.3
+    # via
+    #   datasets
+    #   huggingface-hub
+    #   lightning
+    #   omegaconf
+    #   pytorch-lightning
+    #   timm
+    #   transformers
+    #   wandb
+regex==2026.9.29
+    # via transformers
+requests==2.34.2
+    # via
+    #   datasets
+    #   huggingface-hub
+    #   requests-cache
+    #   transformers
+    #   wandb
+requests-cache==1.3.3
+    # via stable-pretraining
+rich==15.0.0
+    # via
+    #   richuru
+    #   stable-pretraining
+    #   stable-worldmodel
+    #   typer
+richuru==0.1.1
+    # via stable-pretraining
+safetensors==0.8.0
+    # via
+    #   timm
+    #   transformers
+scikit-learn==1.7.2
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+scipy==1.15.3
+    # via
+    #   -r requirements/repro-pusht.in
+    #   scikit-learn
+sentry-sdk==2.73.0
+    # via wandb
+setproctitle==1.3.8
+    # via wandb
+setuptools==84.2.1
+    # via
+    #   triton
+    #   wandb
+shapely==2.1.2
+    # via -r requirements/repro-pusht.in
+shellingham==1.5.4
+    # via typer
+six==1.17.0
+    # via
+    #   docker-pycreds
+    #   python-dateutil
+smmap==5.0.3
+    # via gitdb
+stable-pretraining==0.1.7
+    # via -r requirements/repro-pusht.in
+stable-worldmodel @ git+https://github.com/galilai-group/stable-worldmodel.git@abdced49809d5eae38e24b27dc7b635c502c4812
+    # via -r requirements/repro-pusht.in
+submitit==1.5.4
+    # via
+    #   hydra-submitit-launcher
+    #   stable-pretraining
+sympy==1.14.0
+    # via torch
+tabulate==0.10.0
+    # via
+    #   stable-pretraining
+    #   stable-worldmodel
+threadpoolctl==3.7.0
+    # via scikit-learn
+timm==1.0.15
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+tokenizers==0.21.4
+    # via transformers
+torch==2.8.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   lightning
+    #   pytorch-lightning
+    #   stable-pretraining
+    #   stable-worldmodel
+    #   timm
+    #   torchmetrics
+    #   torchvision
+torchmetrics==1.8.2
+    # via
+    #   -r requirements/repro-pusht.in
+    #   lightning
+    #   pytorch-lightning
+    #   stable-pretraining
+torchvision==0.23.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+    #   stable-worldmodel
+    #   timm
+tqdm==4.70.1
+    # via
+    #   datasets
+    #   huggingface-hub
+    #   lancedb
+    #   lightning
+    #   pytorch-lightning
+    #   stable-worldmodel
+    #   transformers
+transformers==4.51.3
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+triton==3.4.0
+    # via torch
+typer[all]==0.27.3
+    # via
+    #   minari
+    #   stable-pretraining
+    #   stable-worldmodel
+typing-extensions==4.16.0
+    # via
+    #   aiohttp
+    #   aiosignal
+    #   cattrs
+    #   exceptiongroup
+    #   gymnasium
+    #   huggingface-hub
+    #   lance-namespace-urllib3-client
+    #   lightning
+    #   lightning-utilities
+    #   minari
+    #   multidict
+    #   pydantic
+    #   pydantic-core
+    #   pytorch-lightning
+    #   submitit
+    #   torch
+    #   typing-inspection
+    #   wandb
+typing-inspection==0.4.4
+    # via pydantic
+tzdata==2026.6
+    # via
+    #   pandas
+    #   python-dateutil
+url-normalize==3.0.1
+    # via requests-cache
+urllib3==2.8.0
+    # via
+    #   lance-namespace-urllib3-client
+    #   requests
+    #   requests-cache
+    #   sentry-sdk
+wandb==0.19.11
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
+wcwidth==0.9.4
+    # via prettytable
+xxhash==4.0.2
+    # via datasets
+yarl==1.25.1
+    # via aiohttp
+zstandard==0.23.0
+    # via
+    #   -r requirements/repro-pusht.in
+    #   stable-pretraining
