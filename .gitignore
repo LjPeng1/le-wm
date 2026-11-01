@@ -1,0 +1,15 @@
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.venv*/
+.test-deps/
+outputs/
+multirun/
+repro_outputs/
+wandb/
+*.ckpt
+*.pt
+*.h5
+*.lance/
+*.mp4
+.env

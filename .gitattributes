@@ -1,0 +1,4 @@
+docs/** text eol=lf
+requirements/** text eol=lf
+scripts/** text eol=lf
+tests/** text eol=lf
