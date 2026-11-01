@@ -106,6 +106,6 @@ convert(str(root / "pusht_expert_train.h5"),
 
 ## 服务器准入条件
 
-环境解析、源码审计与 CPU 检查不足以通过协议 Gate A/B/C。服务器首先应在隔离 Linux/Python 3.10 环境按锁安装，核验 swm Git SHA、spt wheel 身份、import、真实 dataset batch、模型 strict-load、scheduler 实参及 PushT reset/evaluate 接口。保存实际安装报告，不能把本机 Windows CPU 测试冒称 Linux GPU 验收。
+环境解析、源码审计与 CPU 夹具检查不足以通过运行 Gate1–5。服务器首先应在隔离 Linux/Python 3.10 环境按锁安装，核验 swm Git SHA、spt wheel 身份、import、真实 dataset batch、模型 strict-load、scheduler 实参及 PushT reset/evaluate 接口。现已补齐数据/函数一致性与恢复比较入口，命令见 [服务器交接](PUSHT_SERVER_STEPS.md)。保存实际安装报告，不能把本机 Windows CPU 测试冒称 Linux GPU 验收。
 
 随后分别完成官方权重的原始 50 起点评估和同一完整日程下的 resume 对照；仍需用户给定服务器资源与执行预算。此准备阶段不提交集群作业、不分配 GPU、不运行新训练，也不把作者 96.0% 当本项目已得到的结果。

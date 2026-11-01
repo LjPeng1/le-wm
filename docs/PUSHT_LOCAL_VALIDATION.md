@@ -2,6 +2,24 @@
 
 Date: 2026-11-01. This record covers code preparation on a CPU development machine. No official Push-T control evaluation, server GPU allocation or training reproduction result is reported.
 
+## Latest review-fix validation
+
+The final combined suite passed **56 tests**, skipped **1**, and reported **29 warnings** in **31.45 seconds**, exit 0. Python 3.12.14/torch 2.8 CPU and isolated pinned dependency cores are the local environment; the target remains the separately resolved Linux/Python3.10 candidate. All 16 helper/test Python files also parsed, and the original scientific files/configuration still have an empty upstream diff.
+
+Coverage includes exclusive audit/run/export claims, policy export isolation without resampling, old resume SHA preservation, new-directory-only callbacks, fixed final `last.ckpt`, data-manifest binding/mutation rejection, actual parent-URI/table-path resolution, immutable schedule/dependency/split identities, stepwise LR/loss/input-byte traces, full optimizer/scheduler/loop/RNG state comparison and missing-input-identity rejection. The tiny zero-worker continuous and restored runs agree exactly in both live and **on-disk** final states; deliberate LR corruption is detected. Tests also exercise actual SWM/JEPA/native-loader methods on tiny fixtures, strict state/config rejection, first/repeated caches, and full-row numeric/JPEG/window audit logic on simulated readers.
+
+The skipped test is the real tiny HDF5-to-Lance official-converter/reader integration: its optional local dependencies are unavailable. No official weights or dataset were downloaded or executed. Data-reader fixtures do not prove the real backend API/codec/data passes; the model fixtures do not prove official full-size forward equivalence. Those are explicit Gate1/2 runtime checks.
+
+Warnings include legacy plotting parser deprecations, small fixture worker/logging settings and checkpoint-path metadata restoration. The run-directory metadata warning is expected after staging into a new directory; regression tests verify the old file remains unchanged and the new `last.ckpt` contains the terminal state. During development the new disk comparator caught Lightning's default `last-v1.ckpt` behavior; the owned new callback now disables version counters so it updates the new directory's fixed `last.ckpt` only. An earlier test assertion also used the wrong Lightning callback namespace and was corrected before final acceptance.
+
+Run the local fixture suite with the optional source-isolation dependencies on PYTHONPATH:
+
+```bash
+PUSHT_SOURCE_ISOLATION=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests -q -p no:cacheprovider --basetemp /path/to/new/workspace/test-output
+```
+
+Use an unused test-output directory. Source isolation is test-only and is never enabled by the production CLI. Actual Linux integration should run without it, after installing the candidate environment. Further coverage and server commands are in [review fixes](PUSHT_REVIEW_FIXES.md) and [server handoff](PUSHT_SERVER_STEPS.md).
+
 ## Verified source inspection
 
 The pinned author source is `8edfeb336732b5f3ce7b8b210d0ba370a09e2cac`; unchanged reference files are train.py, eval.py, jepa.py, module.py, utils.py and all config YAML. New scripts observe the original evaluation population and provide opt-in full-state checkpoint support. Strict weight loading is required before accepting a converted official model.
@@ -10,12 +28,12 @@ Dependency metadata and source contracts were inspected, and a Linux/Python 3.10
 
 ## Unresolved runtime gates
 
-- Gate A remains pending: official weights strict-load, full data/backend identity, simulator smoke test, original CEM 50-trial run and saved raw outcomes.
-- Gate B's paper schedule identity remains uncertain. A CPU checkpoint mechanism test cannot establish full multi-worker/bf16/GPU uninterrupted equivalence. The server must qualify that scope before a resumed run is described as equivalent.
+- Gates1–3 remain pending: actual Linux install, release bytes, data/backend verification, official model function checks, simulator smoke and original 50-trial CEM outcomes.
+- Gate4 remains pending: real multi-worker/bf16/GPU uninterrupted equivalence. In particular, persistent-worker iterator recreation can consume generator state differently at resume; only the real qualification with input-byte traces can accept that scope. Do not treat a zero-worker exact fixture as production equivalence.
 - Cluster account/partition, actual GPU availability/VRAM, persistent paths, quotas and preemption policy remain unverified. GPU wall time and peak memory are unmeasured.
 - The candidate environment is not a recovered author environment. JPEG conversion and the paper/code epoch difference remain explicit comparability limits.
 
-## Executed local checks
+## Earlier preparation check (historical)
 
 Root independently executed the final suite: **12 passed, 15 warnings in 29.33 seconds**, exit 0. Interpreter: Python 3.12.14, torch 2.8.0+cpu, Lightning 2.6.1, stable-pretraining 0.1.7 core, pytest 8.4.2. This is distinct from the resolved Linux/Python 3.10 production candidate.
 

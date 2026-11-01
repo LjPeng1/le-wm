@@ -6,9 +6,10 @@ import time
 from pathlib import Path
 
 from .common import environment, helper_manifest, json_value, require_execute, sha256, source_manifest, write_json
+from .identity import stage_policy
 
 
-def install_audit(upstream, audit_dir):
+def install_audit(upstream, audit_dir, isolate_outputs=False):
     """Observe actual row reads and World.evaluate arguments, never resample."""
     import numpy as np
     from omegaconf import OmegaConf
@@ -28,6 +29,14 @@ def install_audit(upstream, audit_dir):
     upstream.swm.wm.utils._resolve = resolve
 
     def get_dataset(cfg, dataset_name):
+        policy = cfg.get("policy", "random")
+        if isolate_outputs:
+            if policy == "random" or not Path(policy).is_absolute() or not Path(policy).is_file():
+                raise ValueError("Use an explicit local absolute policy weights path for baseline evaluation")
+            captured["policy_source"] = {"path": str(Path(policy).resolve()), "sha256": sha256(policy)}
+            # eval.py derives videos and its text log from cfg.policy.parent.
+            # The copied tensor/config bytes are unchanged; original artifacts are read-only.
+            cfg.policy = str(stage_policy(policy, audit_dir))
         dataset = original_get_dataset(cfg, dataset_name)
         captured.update(cfg=cfg, dataset=dataset, row_reads=[])
         dataset_path = Path(dataset.h5_path)
@@ -66,6 +75,8 @@ def install_audit(upstream, audit_dir):
             "rows": rows.tolist(), "episodes": episodes.tolist(), "start_steps": steps.tolist(),
             "goal_offset": kwargs["goal_offset"], "eval_budget": kwargs["eval_budget"],
             "episode_count": len(episodes),
+            "policy_source": captured.get("policy_source"),
+            "output_isolation": isolate_outputs,
         }
         policy = cfg.get("policy", "random")
         if policy != "random":
@@ -105,12 +116,18 @@ def main():
     parser.add_argument("--execute", action="store_true")
     args, overrides = parser.parse_known_args()
     require_execute(parser, args)
-    if (args.audit_dir / "selection.json").exists():
-        parser.error("Audit directory already contains a selection; choose a new directory")
-    import eval as upstream
-    install_audit(upstream, args.audit_dir.resolve())
-    sys.argv = ["eval.py", *overrides]
-    upstream.run()
+    args.audit_dir.mkdir(parents=True, exist_ok=False)
+    write_json(args.audit_dir / "entry_started.json", {"phase": "evaluation_entry", "overrides": overrides})
+    try:
+        import eval as upstream
+        install_audit(upstream, args.audit_dir.resolve(), isolate_outputs=True)
+        sys.argv = ["eval.py", *overrides]
+        upstream.run()
+    except BaseException as error:
+        if not (args.audit_dir / "failed.json").exists():
+            write_json(args.audit_dir / "failed.json", {"phase": "evaluation_entry_failed",
+                       "error_type": type(error).__name__, "error": str(error)})
+        raise
 
 
 if __name__ == "__main__":

@@ -155,10 +155,53 @@ def test_selection_is_persisted_before_evaluation(tmp_path):
     assert result["success_rate"] == 1.
 
 
+def test_evaluation_isolates_policy_outputs_without_resampling(tmp_path):
+    OmegaConf = pytest.importorskip("omegaconf").OmegaConf
+    from scripts.repro_pusht.evaluate import install_audit
+    from scripts.repro_pusht.common import sha256
+    source = tmp_path / "old"
+    source.mkdir()
+    weights = source / "weights.pt"
+    weights.write_bytes(b"policy bytes fixture")
+    (source / "config.json").write_text('{}')
+    old_sha = sha256(weights)
+    data = tmp_path / "fixture.h5"
+    data.write_bytes(b"dataset identity fixture")
+    dataset = ArrayDataset(data)
+    audit = tmp_path / "audit"
+    class World:
+        def evaluate(self, **kwargs):
+            assert Path(kwargs["video"]) == audit / "policy"
+            return {"per_trial": np.ones(50)}
+    upstream = SimpleNamespace(get_dataset=lambda cfg, name: dataset,
+        swm=SimpleNamespace(World=World, wm=SimpleNamespace(utils=SimpleNamespace(
+            _resolve=lambda path: (Path(path), {})))))
+    install_audit(upstream, audit, isolate_outputs=True)
+    cfg = OmegaConf.create({"seed": 42, "policy": str(weights.resolve()),
+                           "eval": {"num_eval": 50, "goal_offset_steps": 25}})
+    observed = upstream.get_dataset(cfg, "fixture")
+    assert Path(cfg.policy) == (audit / "policy/weights.pt").resolve()
+    upstream.swm.wm.utils._resolve(cfg.policy)
+    selected = actual_sampling(observed, cfg)
+    World().evaluate(dataset=dataset, episodes_idx=selected["eval_episodes"].tolist(),
+        start_steps=selected["eval_start_idx"].tolist(), goal_offset=25, eval_budget=50,
+        callables=None, video=Path(cfg.policy).parent)
+    record = json.loads((audit / "selection.json").read_text())
+    assert record["rows"] == selected["random_episode_indices"].tolist()
+    assert record["policy_source"]["sha256"] == record["policy_checkpoint"]["sha256"] == old_sha
+    assert sha256(weights) == old_sha
+    assert sorted(p.name for p in source.iterdir()) == ["config.json", "weights.pt"]
+
+
 @pytest.mark.parametrize("command,arguments", [
     ("train", ["--audit-dir", "unused"]),
     ("evaluate", ["--audit-dir", "unused"]),
     ("convert_hf", ["--source", "unused", "--output", "unused"]),
+    ("verify_data", ["--hdf5", "unused", "--lance", "unused", "--output-dir", "unused"]),
+    ("verify_model", ["--source", "unused", "--converted", "unused", "--hdf5", "unused",
+                      "--expected-hdf5-sha256", "0" * 64, "--output", "unused"]),
+    ("compare_resume", ["--continuous", "unused", "--interrupted", "unused",
+                        "--resumed", "unused", "--output", "unused"]),
 ])
 def test_execution_requires_explicit_flag(command, arguments):
     result = subprocess.run([sys.executable, "-m", "scripts.repro_pusht." + command, *arguments],

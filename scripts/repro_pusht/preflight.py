@@ -17,7 +17,7 @@ def inspect(cache_root):
         "environment": environment(), "sources": source_manifest(),
         "cache_root": str(cache_root),
         "assets": {name: (cache_root / name).exists() for name in names},
-        "baseline": {
+        "upstream_defaults": {
             "train_dataset": "pusht_expert_train.lance",
             "eval_dataset": "pusht_expert_train (HDF5Dataset)",
             "max_epochs": 100, "batch_size": 128, "split_loader_seed": 3072,
@@ -26,10 +26,15 @@ def inspect(cache_root):
             "num_preds": 1, "sigreg_weight": 0.09,
             "eval_sampling": "choice(len(valid_indices)-1, replace=False); sorted row IDs",
         },
+        "first_round": {"label": "paper10_candidate", "max_epochs_from_update_zero": 10,
+                        "global_seed_declared_patch": 3072, "extra_training_arms": 0,
+                        "training_authorized": False},
         "pending": [
-            "Gate A: actual dataset/checkpoint identity and dependency runtime",
-            "Gate B: exact Lightning + stable-pretraining CPU resume integration",
-            "GPU execution is outside code/protocol preparation authorization",
+            "Gate 1: actual Linux installation, release bytes, HDF5/Lance data verification",
+            "Gate 2: actual official weights strict-load and function consistency verification",
+            "Gate 3: released-checkpoint unchanged 50-start CEM; resource approval required",
+            "Gate 4: real-data multi-worker/bf16 resume qualification; resource approval required",
+            "Gate 5: one paper10 candidate; separate training approval required",
         ],
     }
 

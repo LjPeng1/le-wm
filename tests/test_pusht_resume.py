@@ -87,6 +87,7 @@ class FixtureDataset(torch.utils.data.Dataset):
 
 def run_fixture(directory, stop_after_epoch=None, resume=None):
     from omegaconf import OmegaConf
+    from lightning.pytorch.callbacks import ModelCheckpoint
     from jepa import JEPA
     from module import ARPredictor, Embedder, MLP, SIGReg
     from scripts.repro_pusht.train import instrument
@@ -105,7 +106,9 @@ def run_fixture(directory, stop_after_epoch=None, resume=None):
         "fixture": "tiny_JEPA_CPU; not production dimensions"})
     forward = source_symbol("train.py", "lejepa_forward", {"torch": torch})
     upstream = SimpleNamespace(pl=pl, spt=spt)
-    with instrument(upstream, directory, resume, stop_after_epoch, global_seed=41):
+    with instrument(upstream, directory, resume, stop_after_epoch, global_seed=41,
+                    protect_outputs=False, data_identity={"fixture": "twenty_deterministic_samples"},
+                    trace_inputs=True):
         generator = torch.Generator().manual_seed(3072)
         train_set, val_set = torch.utils.data.random_split(FixtureDataset(), [16, 4], generator=generator)
         loader = torch.utils.data.DataLoader(train_set, batch_size=4, shuffle=True,
@@ -131,6 +134,8 @@ def run_fixture(directory, stop_after_epoch=None, resume=None):
         return {"trace": trace, "state": {k: v.detach().clone() for k, v in module.state_dict().items()},
                 "optimizer": trainer.optimizers[0].state_dict(),
                 "scheduler": trainer.lr_scheduler_configs[0].scheduler.state_dict(),
+                "checkpoint_dirs": [str(cb.dirpath) for cb in trainer.callbacks
+                                    if isinstance(cb, ModelCheckpoint)],
                 "step": trainer.global_step, "estimated_steps": trainer.estimated_stepping_batches}
 
 
@@ -155,15 +160,36 @@ def test_real_lightning_spt_epoch_resume_identity(tmp_path):
     first = run_fixture(tmp_path / "first", stop_after_epoch=1)
     checkpoint = tmp_path / "first/checkpoints/last.ckpt"
     assert checkpoint.is_file()
+    from scripts.repro_pusht.common import sha256
+    original_hash = sha256(checkpoint)
     resumed = run_fixture(tmp_path / "resumed", resume=checkpoint)
+    assert sha256(checkpoint) == original_hash
+    receipt = __import__("json").loads((tmp_path / "resumed/resume_input.json").read_text())
+    assert receipt["origin_sha256"] == receipt["staged_sha256"] == original_hash
+    assert resumed["checkpoint_dirs"] == [str((tmp_path / "resumed/checkpoints").resolve())]
     assert continuous["trace"] == first["trace"] + resumed["trace"]
     for key in ("state", "optimizer", "scheduler", "step", "estimated_steps"):
         assert_same(continuous[key], resumed[key])
     assert continuous["step"] == 12 and first["step"] == 4
+    import json
+    def trace_file(name):
+        return [json.loads(line) for line in (tmp_path / name / "step_trace.jsonl").read_text().splitlines()]
+    assert trace_file("continuous") == trace_file("first") + trace_file("resumed")
+    started = json.loads((tmp_path / "resumed/scheduler_started.json").read_text())
+    assert started["estimated_stepping_batches"] == started["schedulers"][0]["max_steps"] == 12
     assert continuous["estimated_steps"] == first["estimated_steps"] == resumed["estimated_steps"] == 12
     saved = torch.load(checkpoint, map_location="cpu", weights_only=False)
     assert all(key in saved for key in ("state_dict", "optimizer_states", "lr_schedulers", "loops", "pusht_repro"))
     assert saved["pusht_repro"]["max_epochs"] == 3
+    from scripts.repro_pusht.compare_resume import compare_runs
+    compared = compare_runs(tmp_path / "continuous", tmp_path / "first", tmp_path / "resumed", atol=0, rtol=0)
+    assert compared["passed"] and compared["sample_ids_observed"] and compared["input_bytes_observed"]
+    assert compared["continuous_steps"] == 12 and compared["resumed_steps"] == 8
+    bad_trace = tmp_path / "resumed/step_trace.jsonl"
+    rows = trace_file("resumed")
+    rows[0]["lr_after"][0][0] += .5
+    bad_trace.write_text("\n".join(json.dumps(row) for row in rows) + "\n")
+    assert not compare_runs(tmp_path / "continuous", tmp_path / "first", tmp_path / "resumed")["passed"]
 
 
 def test_resume_rejects_changed_schedule_or_weights_only(tmp_path):
@@ -177,4 +203,4 @@ def test_resume_rejects_changed_schedule_or_weights_only(tmp_path):
         callback.on_load_checkpoint(trainer, None, {"state_dict": {}})
     with pytest.raises(ValueError, match="10→100"):
         callback.on_load_checkpoint(trainer, None, {"pusht_repro": {
-            "version": 1, "max_epochs": 10, "signature": {"max_epochs": 10}}})
+            "version": 2, "max_epochs": 10, "signature": {"max_epochs": 10}}})
