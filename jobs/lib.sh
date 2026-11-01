@@ -26,16 +26,40 @@ check_source() {
     echo "Author reference training/evaluation/config files changed" >&2; return 2;
   }
 }
+prepare_runtime_env() {
+  # CHPC: the NFS home quota (~20G) is shared by login, sandbox and compute nodes.
+  # Keep every download/cache under the approved persistent project storage instead.
+  # These are assigned unconditionally: the cluster profile exports HF_HOME/PIP_CACHE_DIR/
+  # TORCH_HOME for the 3D-editing line, and those paths must not leak into FYP jobs.
+  export PUSHT_CACHE_ROOT="${PUSHT_CACHE_ROOT:-$STABLEWM_HOME/cache}"
+  export UV_CACHE_DIR="$PUSHT_CACHE_ROOT/uv"
+  export UV_PYTHON_INSTALL_DIR="$PUSHT_CACHE_ROOT/uv-python"
+  export PIP_CACHE_DIR="$PUSHT_CACHE_ROOT/pip"
+  export HF_HOME="$PUSHT_CACHE_ROOT/hf"
+  export HF_HUB_CACHE="$HF_HOME/hub"
+  export TORCH_HOME="$PUSHT_CACHE_ROOT/torch"
+  export XDG_CACHE_HOME="$PUSHT_CACHE_ROOT/xdg"
+  export TRITON_CACHE_DIR="$PUSHT_CACHE_ROOT/triton"
+  export WANDB_DIR="$PUSHT_RUN_DIR/wandb"
+  mkdir -p "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$PIP_CACHE_DIR" "$HF_HOME" \
+    "$HF_HUB_CACHE" "$TORCH_HOME" "$XDG_CACHE_HOME" "$TRITON_CACHE_DIR" "$WANDB_DIR"
+}
 job_start() {
   resolve_paths
-  need_env SLURM_JOB_ID
+  # Stage1 preparation runs interactively on chpc-sandbox (CPU-only sbatch jobs
+  # never leave QOS=init on CHPC), where SLURM_JOB_ID is absent. The synthetic
+  # token only labels the receipt; GPU stages must still be submitted via sbatch.
+  if [[ -z "${SLURM_JOB_ID:-}" ]]; then
+    export SLURM_JOB_ID="sandbox$(date -u +%Y%m%dT%H%M%SZ)"
+  fi
   export PUSHT_STAGE="$1"
   export PUSHT_STEP="initializing"
+  prepare_runtime_env
   mkdir -p "$PUSHT_RUN_DIR/status" "$PUSHT_RUN_DIR/gates" "$PUSHT_RUN_DIR/audits"
   export PUSHT_STATUS="$PUSHT_RUN_DIR/status/$PUSHT_STAGE.$SLURM_JOB_ID.json"
   [[ ! -e "$PUSHT_STATUS" ]] || { echo "Receipt already exists: $PUSHT_STATUS" >&2; return 2; }
   trap 'job_finish $?' EXIT
-  echo "stage=$PUSHT_STAGE slurm_job=$SLURM_JOB_ID run=$PUSHT_RUN_ID date=$(date -u +%FT%TZ)"
+  echo "stage=$PUSHT_STAGE slurm_job=$SLURM_JOB_ID run=$PUSHT_RUN_ID host=$(hostname -s) date=$(date -u +%FT%TZ)"
   check_source
   cd "$PUSHT_REPO"
 }

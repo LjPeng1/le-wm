@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
+# Run this on chpc-sandbox, NOT via sbatch:
+#   bash jobs/submit_stage1.sh --prep
+# On this cluster a CPU-only sbatch job never leaves QOS=init, and compute nodes
+# have no external network, so the installs/downloads/conversion below cannot run
+# inside a Slurm job. The --prep wrapper sets PUSHT_REPO/PUSHT_RUN_ID/PUSHT_CODE_SHA.
 #SBATCH --job-name=pusht-cpu-prepare
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-# CPUs, memory, wall time, partition and output are provided by submit_stage1.sh.
 set -Eeuo pipefail
-source "$(dirname "$0")/lib.sh"
+# Slurm executes a spooled copy where $0 does not point back to the repo (CHPC
+# SERVER_NOTES §G). Prefer the wrapper's PUSHT_REPO, then the submit directory.
+PUSHT_REPO="${PUSHT_REPO:-${SLURM_SUBMIT_DIR:-$PWD}}"
+export PUSHT_REPO
+source "$PUSHT_REPO/jobs/lib.sh"
 job_start prepare_cpu
+df -h "$STABLEWM_HOME" || true
 
 PUSHT_STEP="install_environment"
 command -v uv >/dev/null || { echo "Install/enable uv in the permitted cluster environment first" >&2; exit 2; }

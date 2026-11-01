@@ -3,8 +3,11 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 # GPU GRES, GPU partition, memory, time and output are set in submit_stage1.sh.
+# Submit only after the sandbox preparation wrote Gate1/Gate2 receipts.
 set -Eeuo pipefail
-source "$(dirname "$0")/lib.sh"
+PUSHT_REPO="${PUSHT_REPO:-${SLURM_SUBMIT_DIR:-$PWD}}"
+export PUSHT_REPO
+source "$PUSHT_REPO/jobs/lib.sh"
 job_start official_eval
 [[ "${PUSHT_CONFIRM_GPU_EVAL:-}" = YES ]] || { echo "GPU evaluation not explicitly approved" >&2; exit 2; }
 gate_require gate1

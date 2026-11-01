@@ -4,6 +4,8 @@ These commands are proposed, not allocation authorization. No server GPU evaluat
 
 Contents: [source](#gate-0-source-and-artifact-protection), [environment/data](#gate-1-linux-environment-and-data-cpustorage), [model](#gate-2-actual-model-loading-and-function-checks-cpu-default), [evaluation](#gate-3-official-checkpoint-evaluation--proposed-not-authorized), [recovery](#gate-4-real-data-recovery-qualification--proposed-not-authorized), [single training](#gate-5-one-paper-10-candidate--separate-approval-required).
 
+**CHPC note.** On this cluster, run Gate 1 and the Gate 2 model checks **interactively on `chpc-sandbox` (inside tmux)** via `bash jobs/submit_stage1.sh --prep`, not as a CPU Slurm job: CPU-only `sbatch` jobs never leave `QOS=init`, and compute nodes have no external network. Only the GPU stages are submitted with `sbatch`; see `jobs/README.md`. All download/cache paths are pinned under `$STABLEWM_HOME/cache` to protect the shared home quota.
+
 ## Gate 0: source and artifact protection
 
 Checkout the reviewed commit reported in the PR, not an unverified moving branch. Record `git rev-parse HEAD`. The scientific-file diff must be empty:

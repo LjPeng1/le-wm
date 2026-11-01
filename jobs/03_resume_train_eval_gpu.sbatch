@@ -4,7 +4,9 @@
 #SBATCH --ntasks=1
 # GPU/time/memory/partition supplied by submit_stage2.sh. Requires separate approval.
 set -Eeuo pipefail
-source "$(dirname "$0")/lib.sh"
+PUSHT_REPO="${PUSHT_REPO:-${SLURM_SUBMIT_DIR:-$PWD}}"
+export PUSHT_REPO
+source "$PUSHT_REPO/jobs/lib.sh"
 job_start resume_and_paper10
 [[ "${PUSHT_CONFIRM_GPU_TRAIN:-}" = YES && "${PUSHT_CONFIRM_10EPOCH:-}" = YES ]] || {
   echo "Recovery and 10-epoch GPU training require explicit approval" >&2; exit 2;
