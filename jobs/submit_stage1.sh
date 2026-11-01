@@ -19,7 +19,7 @@ esac
 repo="$(cd "$(dirname "$0")/.." && pwd)"
 export PUSHT_REPO="$repo"
 [[ -n "${STABLEWM_HOME:-}" && "$STABLEWM_HOME" = /* ]] || {
-  echo "Set STABLEWM_HOME to approved absolute persistent project storage (CHPC FYP AUX budget ~1T)" >&2; exit 2;
+  echo "Set STABLEWM_HOME to approved absolute persistent project storage (CHPC campus quota is 1T TOTAL across all projects)" >&2; exit 2;
 }
 [[ -d "$STABLEWM_HOME" ]] || { echo "Create/confirm the approved STABLEWM_HOME first" >&2; exit 2; }
 export PUSHT_CODE_SHA="$(git -C "$repo" rev-parse HEAD)"

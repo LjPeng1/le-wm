@@ -11,7 +11,7 @@ Review branch: `experiment/pusht-baseline-reproduction`. Use the **reviewed comm
 - **Compute nodes have no external network**, so `uv pip install`, the pinned git dependency and the 13.14 GB Hugging Face download cannot run inside a Slurm job.
 - Therefore **stage-1 preparation runs interactively on `chpc-sandbox`** (inside `tmux`; that node has network and is not subject to the login-node process killer), and **only the GPU stage is submitted via `sbatch`**. `chpc-sandbox` is where this repository and the FYP line already run heavy I/O.
 - All download/cache directories are forced **under `$STABLEWM_HOME/cache`** by `jobs/lib.sh` (`UV_CACHE_DIR`, `UV_PYTHON_INSTALL_DIR`, `PIP_CACHE_DIR`, `HF_HOME`, `HF_HUB_CACHE`, `TORCH_HOME`, `XDG_CACHE_HOME`, `TRITON_CACHE_DIR`, `WANDB_DIR`). This keeps the shared ~20 GB NFS home quota out of the picture.
-- `STABLEWM_HOME` should sit in the FYP AUX area (about **1 TB** available here), e.g. `/auxstore/cse/d11/data/s1155211002/FYP/lewm`. It must hold the 13.14 GB compressed archive, the unpacked HDF5, the Lance copy, the venv, full checkpoints and videos.
+- `STABLEWM_HOME` should sit in the FYP AUX area, e.g. `/auxstore/cse/d11/data/s1155211002/FYP/lewm`. **The 1 TB campus quota is shared by every project, not per project** — check the current headroom before the 13.14 GB download and the conversions. It must hold the compressed archive, the unpacked HDF5, the Lance copy, the venv, full checkpoints and videos.
 
 ## First login: prepare on sandbox, submit one GPU evaluation
 
