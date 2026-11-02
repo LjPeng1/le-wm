@@ -3,6 +3,7 @@
 import hashlib
 import importlib.metadata
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -54,19 +55,57 @@ def code_identity():
             "lock_sha256": sha256(ROOT / "requirements/repro-pusht.txt")}
 
 
+def _stat_bind_content_manifest(path):
+    """Cheap binding for PUSHT_DATA_REHASH=skip: manifest digest + size/mtime.
+
+    The full byte rehash remains the default. This path records only what it
+    actually observed (sizes and mtimes); it never claims a digest it did not
+    compute. Used by the speed-mode Stage2 allocation.
+    """
+    from .verify_data import _digest
+    path = Path(path)
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    if set(manifest) != {"schema_version", "kind", "roots", "artifacts", "digest"}:
+        raise ValueError("Unexpected data content manifest fields")
+    unsigned = {k: v for k, v in manifest.items() if k != "digest"}
+    if manifest.get("digest") != _digest(unsigned):
+        raise ValueError("Data content manifest digest mismatch")
+    binding = {}
+    for entry in manifest["artifacts"]:
+        root = Path(manifest["roots"][entry["root"]])
+        target = root if entry["path"] == "." else root / entry["path"]
+        stat = target.stat()
+        if stat.st_size != entry["bytes"]:
+            raise ValueError(f"Data artifact size changed: {target}")
+        binding[f'{entry["root"]}:{entry["path"]}'] = {
+            "size": stat.st_size, "mtime_ns": stat.st_mtime_ns}
+    return manifest, binding
+
+
 def checked_data_report(path):
-    """Rehash frozen inputs; a successful old report alone is not a cache check."""
+    """Bind training to verified inputs.
+
+    Default: rehash every frozen input (a successful old report alone is not a
+    cache check). ``PUSHT_DATA_REHASH=skip`` instead verifies the manifest's own
+    digest and each artifact's size/mtime; it is an explicit speed mode, not a
+    silent relaxation of the default.
+    """
     from .verify_data import validate_content_manifest
     path = Path(path).resolve()
     report = json.loads(path.read_text(encoding="utf-8"))
     if report.get("status") != "passed":
         raise ValueError("Data verification report must have status=passed")
     manifest_path = path.parent / "data_content_manifest.json"
-    manifest = validate_content_manifest(manifest_path)
+    if os.environ.get("PUSHT_DATA_REHASH", "full") == "skip":
+        manifest, binding = _stat_bind_content_manifest(manifest_path)
+        mode = {"rehash": "skipped_stat_bound", "stat_binding": binding}
+    else:
+        manifest = validate_content_manifest(manifest_path)
+        mode = {"rehash": "full"}
     if report.get("data_content_manifest_digest") != manifest["digest"]:
         raise ValueError("Data verification report is not bound to this content manifest")
     return {"report_sha256": sha256(path), "manifest_sha256": sha256(manifest_path),
-            "content_digest": manifest["digest"], "roots": manifest["roots"]}
+            "content_digest": manifest["digest"], "roots": manifest["roots"], **mode}
 
 
 def split_identity(train_loader, val_loader):

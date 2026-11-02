@@ -1,6 +1,7 @@
 """Run unchanged eval.py with a persisted pre-rollout selection audit."""
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -40,9 +41,20 @@ def install_audit(upstream, audit_dir, isolate_outputs=False):
         dataset = original_get_dataset(cfg, dataset_name)
         captured.update(cfg=cfg, dataset=dataset, row_reads=[])
         dataset_path = Path(dataset.h5_path)
-        captured["dataset_identity"] = {"path": str(dataset_path.resolve()),
-                                         "sha256": sha256(dataset_path),
-                                         "bytes": dataset_path.stat().st_size}
+        dataset_stat = dataset_path.stat()
+        expected_h5 = os.environ.get("PUSHT_EXPECTED_H5_SHA256")
+        if expected_h5:
+            if len(expected_h5) != 64 or any(c not in "0123456789abcdef" for c in expected_h5):
+                raise ValueError("PUSHT_EXPECTED_H5_SHA256 must be a lowercase SHA256")
+            captured["dataset_identity"] = {"path": str(dataset_path.resolve()),
+                                             "sha256": expected_h5, "bytes": dataset_stat.st_size,
+                                             "stat": {"size": dataset_stat.st_size,
+                                                      "mtime_ns": dataset_stat.st_mtime_ns},
+                                             "rehash": "skipped_stat_bound"}
+        else:
+            captured["dataset_identity"] = {"path": str(dataset_path.resolve()),
+                                             "sha256": sha256(dataset_path),
+                                             "bytes": dataset_stat.st_size}
         original_get_rows = dataset.get_row_data
 
         def get_rows(indices, *args, **kwargs):
@@ -122,6 +134,14 @@ def main():
         import eval as upstream
         install_audit(upstream, args.audit_dir.resolve(), isolate_outputs=True)
         sys.argv = ["eval.py", *overrides]
+        # Hydra resolves a relative @hydra.main(config_path="./config/eval") as
+        # a package path ("pkg://..config.eval") unless the task function looks
+        # like __main__; when eval.py is imported, run.__module__ == "eval" and
+        # the config module cannot be found. Present it as a __main__ function
+        # so Hydra resolves config_path relative to eval.py's file instead.
+        upstream.run.__module__ = "__main__"
+        if hasattr(upstream.run, "__wrapped__"):
+            upstream.run.__wrapped__.__module__ = "__main__"
         upstream.run()
     except BaseException as error:
         if not (args.audit_dir / "failed.json").exists():

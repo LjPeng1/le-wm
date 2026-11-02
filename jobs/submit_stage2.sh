@@ -15,14 +15,13 @@ export PUSHT_CODE_SHA="$(git -C "$repo" rev-parse HEAD)"
 python3 - "$PUSHT_RUN_DIR" "$PUSHT_CODE_SHA" <<'PY'
 import json,sys,pathlib
 root,commit=pathlib.Path(sys.argv[1]),sys.argv[2]
-for name in ("gate1","gate2","gate3"):
+# Gate3 is deliberately NOT required: the user chose to run Gate5 in parallel
+# with the Gate3 reference evaluation on 2026-11-01. Gate1/Gate2 still gate
+# this submission because they bind the data and model bytes.
+for name in ("gate1","gate2"):
   with (root/"gates"/f"{name}.json").open() as f:d=json.load(f)
   assert d["status"]=="passed" and d["commit_sha"]==commit
-selected=json.loads((root/"audits/official_50/selection.json").read_text())
-completed=json.loads((root/"audits/official_50/completed.json").read_text())
-assert len(selected["rows"])==50 and selected["episode_count"]==50
-assert completed["phase"]=="world_evaluate_returned"
-print("Stage1 three gates and official evaluation readback verified")
+print("Gate1/Gate2 receipts verified; Gate3 runs in parallel by explicit user decision")
 PY
 [[ ! -e "$PUSHT_RUN_DIR/status/submit_stage2.txt" ]] || { echo "Stage2 already submitted; refuse duplicate" >&2; exit 2; }
 gpu_time="${PUSHT_GPU2_TIME:-12:00:00}"

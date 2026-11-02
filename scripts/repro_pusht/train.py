@@ -144,6 +144,14 @@ def main():
     data_identity = checked_data_report(args.data_verification)
     sys.argv = ["train.py", *overrides]
     try:
+        # Hydra resolves a relative @hydra.main(config_path="./config/train")
+        # as a package path unless the task function looks like __main__; when
+        # train.py is imported, run.__module__ == "train" and the config module
+        # cannot be found. Present it as a __main__ function so Hydra resolves
+        # config_path relative to train.py's file instead.
+        upstream.run.__module__ = "__main__"
+        if hasattr(upstream.run, "__wrapped__"):
+            upstream.run.__wrapped__.__module__ = "__main__"
         with instrument(upstream, args.audit_dir.resolve(), args.resume,
                         args.stop_after_epoch, args.global_seed, data_identity=data_identity,
                         trace_inputs=args.trace_inputs):

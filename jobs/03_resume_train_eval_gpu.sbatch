@@ -13,49 +13,27 @@ job_start resume_and_paper10
 }
 gate_require gate1
 gate_require gate2
-gate_require gate3
+# Gate3 (the released-checkpoint reference evaluation) is NOT required here:
+# on 2026-11-01 the user explicitly chose to run Gate5 in parallel with Gate3
+# to save wall-clock. Gate5 training does not depend on Gate3's result; its
+# final evaluation uses the same fixed eval path as Gate3. See
+# $STABLEWM_HOME/ops/STAGE2_GATE4_SKIPPED.md.
 activate_env
 check_gpu
 DATA_REPORT="$PUSHT_RUN_DIR/audits/data_check/data_verification.json"
+# Speed mode (2026-11-01, user direction "把能跳过的全跳过"): reuse the hashes
+# already audited in Gate1/Gate2 instead of re-reading 58 GB at training entry
+# and 44 GB again at evaluation. Both code paths record the observed size/mtime
+# and the audited digest; they never claim a hash they did not compute. Default
+# (env unset) remains a full rehash, so Gate3 is unaffected.
+export PUSHT_DATA_REHASH=skip
+export PUSHT_EXPECTED_H5_SHA256="$(cat "$PUSHT_RUN_DIR/gates/unpacked_h5.sha256")"
 
-PUSHT_STEP="gate4_continuous_two_epoch_smoke"
-python -m scripts.repro_pusht.train \
-  --audit-dir "$PUSHT_RUN_DIR/audits/resume_A" \
-  --data-verification "$DATA_REPORT" --trace-inputs --global-seed 3072 \
-  --execute data=pusht trainer.max_epochs=2 trainer.devices=1 \
-  +trainer.limit_train_batches=4 +trainer.limit_val_batches=2 \
-  subdir="resume_A_$PUSHT_RUN_ID" output_model_name="resume_A_$PUSHT_RUN_ID"
-
-PUSHT_STEP="gate4_interrupted_first_epoch"
-python -m scripts.repro_pusht.train \
-  --audit-dir "$PUSHT_RUN_DIR/audits/resume_B1" \
-  --data-verification "$DATA_REPORT" --trace-inputs --global-seed 3072 \
-  --stop-after-epoch 1 --execute data=pusht trainer.max_epochs=2 trainer.devices=1 \
-  +trainer.limit_train_batches=4 +trainer.limit_val_batches=2 \
-  subdir="resume_B1_$PUSHT_RUN_ID" output_model_name="resume_B1_$PUSHT_RUN_ID"
-
-PUSHT_STEP="gate4_restore_second_epoch"
-python -m scripts.repro_pusht.train \
-  --audit-dir "$PUSHT_RUN_DIR/audits/resume_B2" \
-  --data-verification "$DATA_REPORT" --trace-inputs --global-seed 3072 \
-  --resume "$PUSHT_RUN_DIR/audits/resume_B1/checkpoints/last.ckpt" \
-  --execute data=pusht trainer.max_epochs=2 trainer.devices=1 \
-  +trainer.limit_train_batches=4 +trainer.limit_val_batches=2 \
-  subdir="resume_B2_$PUSHT_RUN_ID" output_model_name="resume_B2_$PUSHT_RUN_ID"
-
-PUSHT_STEP="gate4_compare_real_resume"
-python -m scripts.repro_pusht.compare_resume \
-  --continuous "$PUSHT_RUN_DIR/audits/resume_A" \
-  --interrupted "$PUSHT_RUN_DIR/audits/resume_B1" \
-  --resumed "$PUSHT_RUN_DIR/audits/resume_B2" \
-  --output "$PUSHT_RUN_DIR/audits/recovery_comparison.json" --execute
-python - <<'PY'
-import json,os,pathlib
-p=pathlib.Path(os.environ["PUSHT_RUN_DIR"])/"audits/recovery_comparison.json"
-d=json.loads(p.read_text())
-assert d["status"]=="passed" and d["input_bytes_observed"]
-PY
-gate_pass gate4
+# Gate4 (resume qualification) deliberately omitted on 2026-11-01 at the
+# user's explicit direction ("把能跳过的全跳过"). It produces no scientific
+# result; it only qualifies interrupt/resume recovery. Consequence: if this
+# job is preempted or times out, the run cannot be safely resumed. See
+# $STABLEWM_HOME/ops/STAGE2_GATE4_SKIPPED.md for the recorded divergence.
 
 PUSHT_STEP="gate5_one_seed_paper10"
 MODEL_NAME="paper10_$PUSHT_RUN_ID"
